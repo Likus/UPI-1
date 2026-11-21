@@ -1,0 +1,15 @@
+# Храним файлы с LF независимо от ОС
+* text=auto eol=lf
+
+# Бинарные форматы
+*.png binary
+*.jpg binary
+*.psd binary
+*.zip binary
+*.7z binary
+*.bin binary
+*.hex text
+*.elf binary
+*.step binary
+*.stp binary
+*.stl binary

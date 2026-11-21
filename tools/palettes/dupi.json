@@ -1,0 +1,56 @@
+[
+  {
+    "value": 0,
+    "name": "Пол / Пустота",
+    "bgColor": "#2a2a2a",
+    "emoji": ""
+  },
+  {
+    "value": 1,
+    "name": "Стена",
+    "bgColor": "#1c1c1c",
+    "emoji": "🧱"
+  },
+  {
+    "value": 2,
+    "name": "Враг",
+    "bgColor": "#d14747",
+    "emoji": "👿"
+  },
+  {
+    "value": 3,
+    "name": "Аптечка",
+    "bgColor": "#35823a",
+    "emoji": "❤️"
+  },
+  {
+    "value": 4,
+    "name": "Патроны",
+    "bgColor": "#757a29",
+    "emoji": "🖍"
+  },
+  {
+    "value": 5,
+    "name": "Ключ",
+    "bgColor": "#1d3862",
+    "emoji": "🗝"
+  },
+  {
+    "value": 6,
+    "name": "Старт",
+    "bgColor": "#b0b0b0",
+    "emoji": "🏁"
+  },
+  {
+    "value": 7,
+    "name": "Выход",
+    "bgColor": "#666666",
+    "emoji": "🔚"
+  },
+  {
+    "value": 8,
+    "name": "Дверь",
+    "bgColor": "#9d5eba",
+    "emoji": "🚪"
+  }
+]

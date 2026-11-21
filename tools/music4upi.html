@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!--
+      SPDX-License-Identifier: GPL-3.0-or-later
+      Copyright (C) 2026 Likus - UPI-1 development tool
+    -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔊 Raw Frequency Editor (0-255 Hz)</title>
+<style>
+  :root { --bg: #111; --fg: #0f0; --panel: #1a1a1a; --border: #333; --accent: #0a0; --warn: #fa0; }
+  body { margin:0; font-family: 'Consolas', 'Monaco', monospace; background: var(--bg); color: var(--fg); padding: 20px; }
+  .container { max-width: 950px; margin: 0 auto; }
+  h1 { text-align: center; margin-bottom: 10px; font-size: 1.4rem; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; padding: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; align-items: center; }
+  button { background: #222; color: var(--fg); border: 1px solid var(--border); padding: 6px 12px; cursor: pointer; font-family: inherit; border-radius: 4px; }
+  button:hover { background: var(--accent); color: #000; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  input[type="file"] { color: var(--fg); font-size: 0.9rem; }
+  select, input { background: #111; color: var(--fg); border: 1px solid var(--border); padding: 4px 6px; font-family: inherit; border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); margin-bottom: 15px; }
+  th, td { border: 1px solid var(--border); padding: 8px; text-align: center; }
+  th { background: #222; }
+  input[type="number"] { width: 60px; }
+  textarea { width: 100%; height: 180px; background: #0a0a0a; color: var(--fg); border: 1px solid var(--border); padding: 10px; font-family: inherit; resize: vertical; border-radius: 6px; }
+  .status { text-align: center; height: 22px; font-size: 0.9rem; margin-bottom: 10px; padding: 4px; border-radius: 4px; transition: all 0.2s; }
+  .status.ok { background: #032; color: #0f0; }
+  .status.busy { background: #320; color: var(--warn); }
+  .status.err { background: #300; color: #f44; }
+  .info { font-size: 0.8rem; color: #888; margin-bottom: 8px; background: var(--panel); padding: 8px; border-radius: 4px; border: 1px dashed var(--border); line-height: 1.4; }
+  .limit-badge { background: #420; color: var(--warn); padding: 2px 6px; border-radius: 3px; font-weight: bold; }
+  .locked { background: #222; color: #555; border: none; cursor: default; }
+  .file-info { font-size: 0.85rem; color: #6f6; background: #151; padding: 6px 10px; border-radius: 4px; margin-bottom: 10px; display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔊 Raw Frequency Editor <span class="limit-badge">0-255 Hz</span> для CH32V003</h1>
+  <div class="info">🔹 Чистые частоты без привязки к нотам. <br>
+  🔹 Конвертер линейно масштабирует диапазон трека в указанный вами лимит.<br>
+  🔹 Экспорт: <b>uint8_t[]</b> (1 байт/шаг). 0 = пауза. Шаг сетки фиксирован.</div>
+  
+  <div class="file-info" id="fileInfo"></div>
+
+  <div class="toolbar">
+    <button id="playBtn">▶ Играть</button>
+    <button id="stopBtn" disabled>⏹ Стоп</button>
+    <button id="addBtn">➕ Добавить</button>
+    <button id="clearBtn">🗑 Очистить</button>
+    <button id="exportBtn">📤 Экспорт в C</button>
+    <span style="flex:1"></span>
+    <label>⏱ Шаг (мс): <input type="number" id="tickDur" value="100" min="30" max="500" style="width:60px"></label>
+    <label>📉 Мин (Гц): <input type="number" id="minFreq" value="30" min="0" max="255" style="width:50px"></label>
+    <label>📈 Макс (Гц): <input type="number" id="maxFreq" value="255" min="0" max="255" style="width:50px"></label>
+    <input type="file" id="audioFile" accept=".mp3,.ogg,.wav,.webm">
+    <button id="convertBtn" disabled>🔄 Конвертировать</button>
+  </div>
+  
+  <div class="status ok" id="status">Готово. Загрузите MP3/OGG/WAV.</div>
+  
+  <table id="editorTable">
+    <thead><tr><th>#</th><th>Частота (Гц)</th><th>Длит. (мс)</th><th>Действие</th></tr></thead>
+    <tbody id="notesBody"></tbody>
+  </table>
+  
+  <textarea id="cOutput" readonly placeholder="Готовый C-массив появится здесь..."></textarea>
+</div>
+
+<script>
+const MIN_FREQ_LIMIT = 0;
+const MAX_FREQ_LIMIT = 255;
+let audioCtx = null, isPlaying = false, playTimeout = null, rowCounter = 0;
+let TICK_MS = 100;
+
+const $ = id => document.getElementById(id);
+const setStatus = (msg, cls='ok') => { const el=$('status'); el.textContent=msg; el.className='status '+cls; };
+
+$('tickDur').oninput = (e) => {
+  TICK_MS = Math.max(30, Math.min(500, parseInt(e.target.value) || 100));
+  updateAllDurations();
+};
+
+['minFreq', 'maxFreq'].forEach(id => {
+  $(id).oninput = (e) => {
+    let v = parseInt(e.target.value);
+    if(isNaN(v)) return;
+    e.target.value = Math.max(MIN_FREQ_LIMIT, Math.min(MAX_FREQ_LIMIT, v));
+  };
+});
+
+function createRow(freq=0) {
+  rowCounter++;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${rowCounter}</td>
+    <td><input type="number" class="freqInp" value="${freq}" min="0" max="255"></td>
+    <td><input type="number" class="durInp locked" value="${TICK_MS}" readonly></td>
+    <td><button class="delBtn">✖</button></td>
+  `;
+  return tr;
+}
+
+function updateAllDurations() { document.querySelectorAll('.durInp').forEach(inp => inp.value = TICK_MS); }
+
+$('addBtn').onclick = () => { $('notesBody').appendChild(createRow()); };
+$('clearBtn').onclick = () => { $('notesBody').innerHTML = ''; rowCounter = 0; setStatus('Очищено'); $('fileInfo').style.display='none'; };
+$('audioFile').onchange = () => { $('convertBtn').disabled = !$('audioFile').files.length; };
+$('notesBody').addEventListener('click', e => {
+  if(e.target.classList.contains('delBtn')) { 
+    e.target.closest('tr').remove(); 
+    document.querySelectorAll('#notesBody tr').forEach((tr,i)=>tr.cells[0].textContent=i+1); 
+  }
+});
+
+// 🎛 Превью
+function playSequence() {
+  if(isPlaying) return;
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  
+  isPlaying = true; $('playBtn').disabled = true; $('stopBtn').disabled = false; setStatus('Воспроизведение...');
+
+  const rows = document.querySelectorAll('#notesBody tr');
+  const stepSec = TICK_MS / 1000;
+  let time = audioCtx.currentTime + 0.05;
+  
+  rows.forEach(tr => {
+    const freq = parseInt(tr.querySelector('.freqInp').value) || 0;
+    if(freq > 0) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square'; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.2, time);
+      gain.gain.setValueAtTime(0.2, time + stepSec - 0.005);
+      gain.gain.linearRampToValueAtTime(0, time + stepSec);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(time); osc.stop(time + stepSec);
+    }
+    time += stepSec;
+  });
+
+  const totalMs = (time - audioCtx.currentTime) * 1000;
+  playTimeout = setTimeout(() => { isPlaying=false; $('playBtn').disabled=false; $('stopBtn').disabled=true; setStatus('Готово'); }, totalMs + 100);
+}
+$('playBtn').onclick = playSequence;
+$('stopBtn').onclick = () => { clearTimeout(playTimeout); isPlaying=false; if(audioCtx){audioCtx.close(); audioCtx=null;} $('playBtn').disabled=false; $('stopBtn').disabled=true; setStatus('Остановлено'); };
+
+// 📤 Экспорт
+$('exportBtn').onclick = () => {
+  const rows = document.querySelectorAll('#notesBody tr');
+  if(!rows.length) { setStatus('Нет нот'); return; }
+  let c = `#include <stdint.h>\n\n// Шаг: ${TICK_MS} мс | Диапазон: ${$('minFreq').value}-${$('maxFreq').value} Гц (0 = пауза)\nconst uint8_t melody[] = {\n`;
+  rows.forEach(tr => { 
+    let f = parseInt(tr.querySelector('.freqInp').value) || 0;
+    c += `    ${Math.max(0, Math.min(255, f))},\n`; 
+  });
+  c += `};\n\n#define MELODY_LENGTH (sizeof(melody) / sizeof(melody[0]))\n`;
+  $('cOutput').value = c;
+  setStatus('Код сгенерирован. Скопируйте в .h/.c');
+};
+
+// 🔄 Конвертер
+$('convertBtn').onclick = async () => {
+  const file = $('audioFile').files[0];
+  if(!file) return;
+  
+  setStatus('Декодирование...', 'busy');
+  $('convertBtn').disabled = true;
+  
+  try {
+    const decCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const arrayBuf = await file.arrayBuffer();
+    const buffer = await decCtx.decodeAudioData(arrayBuf);
+    decCtx.close();
+
+    $('fileInfo').textContent = `📄 ${file.name} | ${buffer.duration.toFixed(1)}с | ${buffer.sampleRate} Гц | ${buffer.numberOfChannels} кан.`;
+    $('fileInfo').style.display = 'block';
+    
+    await processAudioBuffer(buffer);
+  } catch(e) {
+    setStatus('Ошибка декодирования. Попробуйте WAV/OGG или откройте в Chrome.', 'err');
+  } finally {
+    $('convertBtn').disabled = false;
+  }
+};
+
+async function processAudioBuffer(buffer) {
+  const channel = buffer.getChannelData(0);
+  const sr = buffer.sampleRate;
+  const stepSamples = Math.floor(sr * (TICK_MS / 1000));
+  const totalSteps = Math.floor(channel.length / stepSamples);
+  const uMin = parseInt($('minFreq').value) || 0;
+  const uMax = parseInt($('maxFreq').value) || 255;
+  const CHUNK = 250;
+
+  setStatus('Проход 1/2: Детекция сырых частот...', 'busy');
+  const rawFreqs = [];
+  
+  for (let i = 0; i < totalSteps; i += CHUNK) {
+    const end = Math.min(i + CHUNK, totalSteps);
+    setStatus(`Проход 1/2: ${Math.round((i/totalSteps)*100)}%...`, 'busy');
+    await new Promise(r => setTimeout(r, 0));
+    
+    for (let j = i; j < end; j++) {
+      const start = j * stepSamples;
+      const chunk = channel.slice(start, start + stepSamples);
+      rawFreqs.push(detectPitch(chunk, sr));
+    }
+  }
+
+  // Находим рабочий диапазон трека (игнорируем 0/тишину)
+  const validFreqs = rawFreqs.filter(f => f > 20);
+  if(validFreqs.length === 0) { setStatus('Звук не обнаружен или слишком тихий.', 'err'); return; }
+  
+  const rMin = Math.min(...validFreqs);
+  const rMax = Math.max(...validFreqs);
+  const rRange = rMax - rMin || 1;
+  const uRange = uMax - uMin || 1;
+
+  setStatus('Проход 2/2: Линейное масштабирование...', 'busy');
+  await new Promise(r => setTimeout(r, 0));
+
+  const finalFreqs = rawFreqs.map(f => {
+    if (f <= 20) return 0; // тишина/шум
+    // Линейная интерполяция: [rMin..rMax] -> [uMin..uMax]
+    let scaled = uMin + ((f - rMin) / rRange) * uRange;
+    return Math.round(Math.max(uMin, Math.min(uMax, scaled)));
+  });
+
+  setStatus(`Рендеринг ${finalFreqs.length} шагов...`, 'busy');
+  await new Promise(r => setTimeout(r, 0));
+  
+  $('notesBody').innerHTML = '';
+  rowCounter = 0;
+  const frag = document.createDocumentFragment();
+  finalFreqs.forEach(f => frag.appendChild(createRow(f)));
+  $('notesBody').appendChild(frag);
+  
+  setStatus(`Готово! ${finalFreqs.length} шагов. Диапазон трека ${Math.round(rMin)}-${Math.round(rMax)} Гц → сжат в ${uMin}-${uMax} Гц.`);
+}
+
+function detectPitch(buf, sampleRate) {
+  let rms = 0;
+  for(let i=0; i<buf.length; i++) rms += buf[i]*buf[i];
+  rms = Math.sqrt(rms/buf.length);
+  if(rms < 0.012) return 0; // тишина
+  
+  let bestCorr = 0, bestLag = 0;
+  const minLag = Math.floor(sampleRate / 1200);
+  const maxLag = Math.floor(sampleRate / 30);
+  
+  for(let lag=minLag; lag<maxLag; lag++) {
+    let corr = 0;
+    for(let i=0; i<buf.length-lag; i++) corr += buf[i]*buf[i+lag];
+    if(corr > bestCorr) { bestCorr=corr; bestLag=lag; }
+  }
+  return bestLag > 0 ? sampleRate / bestLag : 0;
+}
+
+// Демо
+for(let i=0; i<8; i++) $('notesBody').appendChild(createRow(i%3===0? 60 : 120));
+</script>
+</body>
+</html>

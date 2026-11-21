@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!--
+      SPDX-License-Identifier: GPL-3.0-or-later
+      Copyright (C) 2026 Likus - UPI-1 development tool
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор карт</title>
+    <style>
+        :root {
+            --bg: #1e1e24;
+            --panel: #2b2b36;
+            --text: #e0e0e0;
+            --accent: #4a90d9;
+            --border: #3a3a45;
+            --danger: #d9534f;
+            --success: #5cb85c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+        header {
+            background: var(--panel);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        h1 { font-size: 18px; font-weight: 600; }
+        .controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .controls-left { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .controls-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        input[type="number"], input[type="text"], input[type="color"] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        input[type="number"] { width: 60px; }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: #555; }
+        button.danger { background: var(--danger); }
+        button.success { background: var(--success); }
+        
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        #palette {
+            width: 220px;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .palette-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .palette-item:hover { background: #333; }
+        .palette-item.active { border-color: var(--accent); background: #2a2a35; }
+        .tile-preview {
+            width: 32px; height: 32px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+        .tile-info { font-size: 13px; line-height: 1.2; }
+        .tile-info span { display: block; color: #888; font-size: 11px; }
+
+        #canvas-container {
+            flex: 1;
+            overflow: auto;
+            background: #15151a;
+        }
+        #canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 100%;
+            min-height: 100%;
+            padding: 20px;
+        }
+        canvas {
+            background: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            cursor: crosshair;
+            image-rendering: pixelated;
+        }
+
+        #io-panel {
+            background: var(--panel);
+            border-top: 1px solid var(--border);
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #io-panel label { font-size: 13px; color: #aaa; }
+        #mapText {
+            width: 100%;
+            height: 80px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+        .io-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .hint { color: #777; font-size: 11px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--panel);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%; max-width: 500px;
+            max-height: 80vh;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .modal h2 { margin-bottom: 10px; }
+        .tile-list { overflow-y: auto; max-height: 300px; display: flex; flex-direction: column; gap: 10px; }
+        .tile-editor {
+            display: flex; gap: 6px; align-items: center;
+            background: var(--bg); padding: 8px; border-radius: 4px;
+        }
+        .tile-editor input[type="number"] { width: 45px; }
+        .tile-editor input[type="text"] { flex: 1; }
+        .tile-editor input.emoji-input { width: 40px; text-align: center; font-size: 16px; flex: none; }
+        .tile-editor input[type="color"] { width: 45px; padding: 2px; flex: none; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🗺️ Редактор карт</h1>
+        <div class="controls-left">
+            <label>Ш: <input type="number" id="inputWidth" value="20" min="2" max="200"></label>
+            <label>В: <input type="number" id="inputHeight" value="15" min="2" max="200"></label>
+            <button id="btnResize">Создать</button>
+            <button id="btnClear" class="danger">Очистить</button>
+        </div>
+        <div class="controls-right">
+            <button id="btnSavePalette" class="secondary">💾 Сохранить палитру</button>
+            <button id="btnLoadPalette" class="secondary">📂 Загрузить</button>
+            <button id="btnSettings" class="secondary">⚙️ Тайлы</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="palette"></div>
+        <div id="canvas-container">
+            <div id="canvas-wrapper">
+                <canvas id="gridCanvas"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <div id="io-panel">
+        <label>Данные карты (одномерный массив, разделитель — запятая):</label>
+        <textarea id="mapText" placeholder="0,1,0,0,2,1..."></textarea>
+        <div class="io-actions">
+            <button id="btnExportText">📤 Экспорт в поле</button>
+            <button id="btnImportText">📥 Импорт из поля</button>
+            <button id="btnCopyText" class="secondary">📋 Копировать</button>
+        </div>
+        <div class="hint">Формат готов для вставки в C-код. Ожидается ровно Ш×В значений.</div>
+    </div>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>Настройка типов тайлов</h2>
+            <div class="tile-list" id="tileList"></div>
+            <button id="btnAddTile" class="secondary" style="width:100%">+ Добавить тип</button>
+            <div class="hint">Значения должны быть уникальными целыми числами.</div>
+            <div class="modal-actions">
+                <button id="btnCloseSettings" class="secondary">Закрыть</button>
+                <button id="btnSaveSettings" class="success">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_TILES = [
+            { value: 0, name: "Пол / Пустота", bgColor: "#2a2a2a", emoji: "" },
+            { value: 1, name: "Стена", bgColor: "#1c1c1c", emoji: "🧱" },
+            { value: 2, name: "Дверь", bgColor: "#2a2015", emoji: "🚪" },
+            { value: 3, name: "Спавн", bgColor: "#152a1a", emoji: "🚩" },
+            { value: 4, name: "Враг", bgColor: "#2a1515", emoji: "👾" },
+            { value: 5, name: "Монетка", bgColor: "#2a2a15", emoji: "🪙" }
+        ];
+
+        const CELL_SIZE = 32;
+        let state = {
+            width: 20,
+            height: 15,
+            mapData: [],
+            tiles: JSON.parse(JSON.stringify(DEFAULT_TILES)),
+            selectedTileIndex: 0,
+            isDrawing: false
+        };
+
+        const canvas = document.getElementById("gridCanvas");
+        const ctx = canvas.getContext("2d");
+        const paletteEl = document.getElementById("palette");
+        const modal = document.getElementById("settingsModal");
+        const tileListEl = document.getElementById("tileList");
+        const mapTextEl = document.getElementById("mapText");
+
+        function init() {
+            resizeGrid(state.width, state.height, true);
+            renderPalette();
+            setupEvents();
+        }
+
+        function resizeGrid(w, h, clear = false) {
+            state.width = Math.max(2, Math.min(200, parseInt(w) || 2));
+            state.height = Math.max(2, Math.min(200, parseInt(h) || 2));
+            
+            if (clear) {
+                state.mapData = Array.from({ length: state.height }, () => 
+                    new Array(state.width).fill(0)
+                );
+            }
+
+            canvas.width = state.width * CELL_SIZE;
+            canvas.height = state.height * CELL_SIZE;
+            document.getElementById("inputWidth").value = state.width;
+            document.getElementById("inputHeight").value = state.height;
+            drawGrid();
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = `${CELL_SIZE * 0.75}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            for (let y = 0; y < state.height; y++) {
+                for (let x = 0; x < state.width; x++) {
+                    const val = state.mapData[y][x];
+                    const tile = state.tiles.find(t => t.value === val) || state.tiles[0];
+                    
+                    ctx.fillStyle = tile.bgColor || "#222";
+                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    
+                    ctx.strokeStyle = "#444";
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+                    if (tile.emoji) {
+                        ctx.fillText(tile.emoji, x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2 + 1);
+                    }
+                }
+            }
+        }
+
+        function renderPalette() {
+            paletteEl.innerHTML = "";
+            state.tiles.forEach((tile, index) => {
+                const el = document.createElement("div");
+                el.className = `palette-item ${index === state.selectedTileIndex ? "active" : ""}`;
+                el.innerHTML = `
+                    <div class="tile-preview" style="background:${tile.bgColor || '#333'}">${tile.emoji || ''}</div>
+                    <div class="tile-info">
+                        <div>${tile.name}</div>
+                        <span>ID: ${tile.value}</span>
+                    </div>
+                `;
+                el.onclick = () => {
+                    state.selectedTileIndex = index;
+                    renderPalette();
+                };
+                paletteEl.appendChild(el);
+            });
+        }
+
+        function getCellFromEvent(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            return {
+                col: Math.floor(x / CELL_SIZE),
+                row: Math.floor(y / CELL_SIZE)
+            };
+        }
+
+        function paintCell(row, col) {
+            if (row < 0 || row >= state.height || col < 0 || col >= state.width) return;
+            const tile = state.tiles[state.selectedTileIndex];
+            if (state.mapData[row][col] === tile.value) return;
+            
+            state.mapData[row][col] = tile.value;
+            drawGrid();
+        }
+
+        // ===== Сохранение/Загрузка палитры =====
+        function downloadFallback(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            copyFeedback("💾 Сохранено (в загрузки)");
+        }
+
+        async function savePalette() {
+            const json = JSON.stringify(state.tiles, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+
+            // Современный API для диалога "Сохранить как..."
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'palette.json',
+                        types: [{
+                            description: 'JSON Palette',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    copyFeedback("💾 Палитра сохранена");
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.warn("Save picker failed, using fallback:", err);
+                        downloadFallback(blob, "palette.json");
+                    }
+                    // AbortError — пользователь отменил диалог, ничего не делаем
+                }
+            } else {
+                // Fallback для Firefox / Safari
+                downloadFallback(blob, "palette.json");
+            }
+        }
+
+        function loadPalette() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".json,application/json";
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const tiles = JSON.parse(event.target.result);
+                        if (!Array.isArray(tiles)) throw new Error("Неверный формат: ожидается массив");
+                        
+                        for (const tile of tiles) {
+                            if (typeof tile.value !== "number") throw new Error("Каждый тайл должен иметь числовое значение 'value'");
+                            if (typeof tile.name !== "string" || !tile.name.trim()) throw new Error("Каждый тайл должен иметь название 'name'");
+                            if (typeof tile.bgColor !== "string") throw new Error("Каждый тайл должен иметь цвет 'bgColor'");
+                        }
+                        
+                        const values = tiles.map(t => t.value);
+                        if (new Set(values).size !== values.length) {
+                            throw new Error("Значения 'value' должны быть уникальными");
+                        }
+                        
+                        state.tiles = tiles.sort((a, b) => a.value - b.value);
+                        if (state.selectedTileIndex >= state.tiles.length) state.selectedTileIndex = 0;
+                        
+                        renderPalette();
+                        drawGrid();
+                        copyFeedback("📂 Палитра загружена");
+                    } catch (err) {
+                        alert("Ошибка загрузки палитры: " + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ===== Текст Импорт/Экспорт =====
+        function exportToText() {
+            const rows = state.mapData.map(row => row.join(","));
+            mapTextEl.value = rows.join(",\n");
+            copyFeedback("📤 Экспортировано");
+        }
+
+        function importFromText() {
+            const text = mapTextEl.value;
+            if (!text.trim()) { alert("Поле пустое"); return; }
+            
+            const values = text.split(/[,\\s\\n]+/).map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+            const expected = state.width * state.height;
+            
+            if (values.length !== expected) {
+                alert(`Ошибка: ожидалось ${expected} значений (Ш×В), получено ${values.length}`);
+                return;
+            }
+
+            for (let y = 0; y < state.height; y++) {
+                for (let x = 0; x < state.width; x++) {
+                    state.mapData[y][x] = values[y * state.width + x];
+                }
+            }
+            drawGrid();
+            copyFeedback("📥 Импортировано");
+        }
+
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(mapTextEl.value);
+                copyFeedback("📋 Скопировано");
+            } catch (e) {
+                mapTextEl.select();
+                document.execCommand("copy");
+                copyFeedback("📋 Скопировано");
+            }
+        }
+
+        function copyFeedback(msg) {
+            const btn = document.activeElement;
+            const orig = btn.textContent;
+            btn.textContent = msg;
+            setTimeout(() => btn.textContent = orig, 1200);
+        }
+
+        function setupEvents() {
+            canvas.addEventListener("mousedown", e => {
+                state.isDrawing = true;
+                const { row, col } = getCellFromEvent(e);
+                paintCell(row, col);
+            });
+            window.addEventListener("mousemove", e => {
+                if (!state.isDrawing) return;
+                const { row, col } = getCellFromEvent(e);
+                paintCell(row, col);
+            });
+            window.addEventListener("mouseup", () => state.isDrawing = false);
+
+            document.getElementById("btnResize").onclick = () => {
+                if (confirm("Изменение размеров очистит текущую карту. Продолжить?")) {
+                    resizeGrid(document.getElementById("inputWidth").value, document.getElementById("inputHeight").value, true);
+                }
+            };
+            document.getElementById("btnClear").onclick = () => {
+                if (confirm("Очистить карту?")) {
+                    state.mapData = Array.from({ length: state.height }, () => new Array(state.width).fill(0));
+                    drawGrid();
+                    mapTextEl.value = "";
+                }
+            };
+
+            document.getElementById("btnSavePalette").onclick = savePalette;
+            document.getElementById("btnLoadPalette").onclick = loadPalette;
+
+            document.getElementById("btnExportText").onclick = exportToText;
+            document.getElementById("btnImportText").onclick = importFromText;
+            document.getElementById("btnCopyText").onclick = copyToClipboard;
+
+            document.getElementById("btnSettings").onclick = openSettings;
+            document.getElementById("btnCloseSettings").onclick = () => modal.classList.remove("active");
+            document.getElementById("btnAddTile").onclick = () => {
+                const newVal = state.tiles.length ? Math.max(...state.tiles.map(t=>t.value)) + 1 : 0;
+                addTileEditor(newVal, "Новый тайл", "#333333", "");
+            };
+            document.getElementById("btnSaveSettings").onclick = saveSettings;
+        }
+
+        function openSettings() {
+            tileListEl.innerHTML = "";
+            state.tiles.forEach(t => addTileEditor(t.value, t.name, t.bgColor, t.emoji));
+            modal.classList.add("active");
+        }
+
+        function addTileEditor(value, name, bgColor, emoji = '') {
+            const row = document.createElement("div");
+            row.className = "tile-editor";
+            row.innerHTML = `
+                <input type="number" class="tv" value="${value}" min="0">
+                <input type="text" class="tn" value="${name}" placeholder="Название">
+                <input type="text" class="emoji-input te" value="${emoji}" placeholder="🎨" maxlength="2">
+                <input type="color" class="tc" value="${bgColor || '#333333'}">
+                <button class="danger btn-del" style="padding:4px 8px">×</button>
+            `;
+            row.querySelector(".btn-del").onclick = () => row.remove();
+            tileListEl.appendChild(row);
+        }
+
+        function saveSettings() {
+            const rows = document.querySelectorAll(".tile-editor");
+            const newTiles = [];
+            for (const row of rows) {
+                const v = parseInt(row.querySelector(".tv").value);
+                const n = row.querySelector(".tn").value.trim();
+                const e = row.querySelector(".te").value.trim();
+                const c = row.querySelector(".tc").value;
+                
+                if (isNaN(v) || !n) { alert("Заполните значение и название."); return; }
+                if (newTiles.some(t => t.value === v)) { alert("Значения должны быть уникальными."); return; }
+                newTiles.push({ value: v, name: n, bgColor: c, emoji: e });
+            }
+            state.tiles = newTiles.sort((a,b) => a.value - b.value);
+            if (state.selectedTileIndex >= state.tiles.length) state.selectedTileIndex = 0;
+            renderPalette();
+            drawGrid();
+            modal.classList.remove("active");
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!--
+      SPDX-License-Identifier: GPL-3.0-or-later
+      Copyright (C) 2026 Likus - UPI-1 development tool
+    -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embedded Monochrome Image Converter</title>
+  <style>
+    :root {
+      --bg: #121212; --panel: #1e1e1e; --border: #333; --accent: #4a9eff;
+      --text: #e0e0e0; --text-dim: #888; --success: #4caf50; --warn: #ff9800;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { background: var(--panel); padding: 10px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 1.1rem; font-weight: 500; }
+    .container { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: 340px; min-width: 300px; background: var(--panel); padding: 15px; overflow-y: auto; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
+    .main { 
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+      background: #0a0a0a; position: relative; overflow: auto; padding: 20px;
+    }
+    .group { background: #252525; padding: 12px; border-radius: 6px; border: 1px solid var(--border); }
+    .group label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-dim); }
+    .row { display: flex; gap: 10px; margin-bottom: 8px; }
+    .row > * { flex: 1; }
+    input, select, textarea {
+      width: 100%; background: #111; border: 1px solid var(--border); color: var(--text);
+      padding: 6px 8px; border-radius: 4px; font-size: 0.9rem;
+    }
+    textarea { font-family: 'Consolas', monospace; font-size: 0.85rem; resize: vertical; }
+    button {
+      width: 100%; padding: 8px; background: var(--accent); color: #000; border: none;
+      border-radius: 4px; font-weight: 500; cursor: pointer; transition: 0.2s;
+    }
+    button:hover { filter: brightness(1.1); }
+    button.secondary { background: #333; color: var(--text); }
+    .status { font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #333; margin-top: 4px; }
+    .status.ok { background: #1b3a20; color: var(--success); }
+    .status.warn { background: #3a2f1b; color: var(--warn); }
+    
+    .canvas-wrapper {
+      display: inline-block;
+      border: 1px solid var(--border);
+      line-height: 0;
+      background: #000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    canvas { 
+      image-rendering: pixelated; 
+      cursor: crosshair; 
+      display: block;
+    }
+    
+    .hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; text-align: center; }
+    .tool-row { display: flex; gap: 8px; }
+    .tool-btn { flex: 1; padding: 6px; font-size: 0.85rem; }
+    .tool-btn.active { background: var(--accent); color: #000; }
+    .scale-info { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; text-align: center; }
+    
+    .file-label {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px; background: #333; color: var(--text); border-radius: 4px;
+      cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .file-label:hover { background: #444; }
+    .file-label input { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖼️ Embedded Monochrome Converter</h1>
+    <span style="font-size: 0.8rem; color: var(--text-dim);">Для OLED/LCD/e-Paper дисплеев</span>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="group">
+        <label>Разрешение (кратно 8)</label>
+        <div class="row">
+          <input type="number" id="width" value="128" min="8" step="8">
+          <input type="number" id="height" value="40" min="8" step="8">
+        </div>
+      </div>
+
+      <div class="group">
+        <label>Импорт изображения</label>
+        <label class="file-label">
+          📁 Выбрать файл (PNG/JPG)
+          <input type="file" id="fileInput" accept="image/*">
+        </label>
+        <div class="hint" id="fileInfo">Файл не выбран</div>
+        <button onclick="App.renderFromFile()" style="margin-top:8px">🖼️ Отрендерить из файла</button>
+      </div>
+
+      <div class="group">
+        <label>Формат данных</label>
+        <select id="addressing">
+          <option value="horizontal">Горизонтальная (строки)</option>
+          <option value="vertical" selected>Вертикальная / Page (SSD1306, ST7565)</option>
+        </select>
+        <select id="bitOrder" style="margin-top:6px">
+          <option value="msb" selected>MSB First (старший бит = левый/верхний)</option>
+          <option value="lsb">LSB First (младший бит = левый/верхний)</option>
+        </select>
+        <label style="margin-top:8px">
+          <input type="checkbox" id="invert"> Инвертировать цвета
+        </label>
+        <label style="margin-top:8px">
+          <input type="checkbox" id="skipSync" checked> Игнорировать 0xAA / 0x55
+        </label>
+      </div>
+
+      <div class="group">
+        <label>Порог бинаризации</label>
+        <input type="range" id="threshold" min="0" max="255" value="128" style="width:100%">
+        <div class="scale-info" id="thresholdInfo">Порог: 128</div>
+        <div class="hint">Яркие пиксели → белый, тёмные → чёрный</div>
+      </div>
+
+      <div class="group">
+        <label>Входные данные (C-массив)</label>
+        <textarea id="input" rows="6" placeholder="const uint8_t IMG[] = { 0xAA, 0x55, ... };"></textarea>
+        <button onclick="App.render()" style="margin-top:8px">🔄 Отрендерить из массива</button>
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="group">
+        <label>Масштаб отображения</label>
+        <input type="range" id="scaleSlider" min="1" max="32" value="8" style="width:100%">
+        <div class="scale-info" id="scaleInfo">Масштаб: 8x</div>
+      </div>
+
+      <div class="group">
+        <label>Инструменты рисования</label>
+        <div class="tool-row">
+          <button class="tool-btn active" id="toolPaint" onclick="App.setTool('paint')">🖌️ Рисовать</button>
+          <button class="tool-btn" id="toolErase" onclick="App.setTool('erase')">🧹 Стирать</button>
+        </div>
+        <button onclick="App.clearCanvas()" style="margin-top:8px; background:#555;">🗑️ Очистить холст</button>
+      </div>
+
+      <div class="group">
+        <label>Экспорт обратно в C</label>
+        <textarea id="output" rows="6" readonly></textarea>
+        <div class="tool-row" style="margin-top:6px">
+          <button onclick="App.exportArray()">📤 Сгенерировать</button>
+          <button class="secondary" onclick="App.copyOutput()">📋 Копировать</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="mainArea">
+      <div class="canvas-wrapper" id="canvasWrapper">
+        <canvas id="canvas"></canvas>
+      </div>
+      <p class="hint">ЛКМ: рисовать/стирать • Колёсико: масштаб • Слайдер: точный масштаб</p>
+    </main>
+  </div>
+
+<script>
+const App = {
+  canvas: document.getElementById('canvas'),
+  ctx: document.getElementById('canvas').getContext('2d'),
+  pixels: null,
+  scale: 8,
+  threshold: 128,
+  tool: 'paint',
+  drawing: false,
+  lastPos: null,
+  imgW: 128,
+  imgH: 40,
+  loadedImage: null, // Храним загруженное изображение
+
+  init() {
+    this.canvas.addEventListener('mousedown', e => this.startDraw(e));
+    this.canvas.addEventListener('mousemove', e => this.draw(e));
+    window.addEventListener('mouseup', () => { this.drawing = false; this.lastPos = null; });
+    
+    this.canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 1 : -1;
+      this.setScale(this.scale + delta);
+    }, { passive: false });
+
+    document.getElementById('scaleSlider').addEventListener('input', e => {
+      this.setScale(parseInt(e.target.value));
+    });
+
+    document.getElementById('threshold').addEventListener('input', e => {
+      this.threshold = parseInt(e.target.value);
+      document.getElementById('thresholdInfo').textContent = `Порог: ${this.threshold}`;
+    });
+
+    document.getElementById('fileInput').addEventListener('change', e => this.handleFile(e));
+
+    document.getElementById('width').addEventListener('change', () => this.render());
+    document.getElementById('height').addEventListener('change', () => this.render());
+  },
+
+  handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        this.loadedImage = img;
+        document.getElementById('fileInfo').textContent = `Готов к рендеру: ${img.width}×${img.height} (${Math.round(file.size/1024)} KB)`;
+        this.setStatus('Файл загружен. Настройте порог и нажмите "Отрендерить"', 'ok');
+        // Сбрасываем пиксели при загрузке нового файла, чтобы не путать
+        this.pixels = null; 
+        this.renderCanvas(); 
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  },
+
+  renderFromFile() {
+    if (!this.loadedImage) return this.setStatus('Сначала выберите файл изображения', 'warn');
+    
+    this.imgW = Math.ceil(this.loadedImage.width / 8) * 8;
+    this.imgH = Math.ceil(this.loadedImage.height / 8) * 8;
+    document.getElementById('width').value = this.imgW;
+    document.getElementById('height').value = this.imgH;
+
+    this.processImage(this.loadedImage);
+  },
+
+  processImage(img) {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = this.imgW;
+    offscreen.height = this.imgH;
+    const ctx = offscreen.getContext('2d');
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, this.imgW, this.imgH);
+    const dx = (this.imgW - img.width) / 2;
+    const dy = (this.imgH - img.height) / 2;
+    ctx.drawImage(img, dx, dy);
+
+    const imageData = ctx.getImageData(0, 0, this.imgW, this.imgH);
+    const data = imageData.data;
+    
+    this.pixels = new Uint8Array(this.imgW * this.imgH);
+    for (let i = 0; i < this.imgW * this.imgH; i++) {
+      const r = data[i * 4];
+      const g = data[i * 4 + 1];
+      const b = data[i * 4 + 2];
+      // Яркость по формуле восприятия
+      const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+      this.pixels[i] = brightness >= this.threshold ? 1 : 0;
+    }
+
+    this.setStatus(`PNG импортирован → ${img.width}×${img.height} (массив: ${this.imgW}×${this.imgH})`, 'ok');
+    this.renderCanvas();
+  },
+
+  setScale(newScale) {
+    this.scale = Math.max(1, Math.min(32, newScale));
+    document.getElementById('scaleSlider').value = this.scale;
+    document.getElementById('scaleInfo').textContent = `Масштаб: ${this.scale}x`;
+    this.renderCanvas();
+  },
+
+  parseInput() {
+    const raw = document.getElementById('input').value;
+    const hex = raw.match(/0x[0-9a-f]{2}/gi)?.map(h => parseInt(h, 16)) || [];
+    const skip = document.getElementById('skipSync').checked;
+    return skip ? hex.filter(b => b !== 0xAA && b !== 0x55) : hex;
+  },
+
+  decode(bytes, w, h) {
+    const p = new Uint8Array(w * h);
+    const msb = document.getElementById('bitOrder').value === 'msb';
+    const mode = document.getElementById('addressing').value;
+    let idx = 0;
+
+    if (mode === 'horizontal') {
+      for (let y = 0; y < h; y++) {
+        for (let xb = 0; xb < Math.ceil(w / 8); xb++) {
+          if (idx >= bytes.length) break;
+          const b = bytes[idx++];
+          for (let bit = 0; bit < 8; bit++) {
+            const x = xb * 8 + bit;
+            if (x >= w) break;
+            p[y * w + x] = (b >> (msb ? 7 - bit : bit)) & 1;
+          }
+        }
+      }
+    } else {
+      const pages = Math.ceil(h / 8);
+      for (let pg = 0; pg < pages; pg++) {
+        for (let x = 0; x < w; x++) {
+          if (idx >= bytes.length) break;
+          const b = bytes[idx++];
+          for (let bit = 0; bit < 8; bit++) {
+            const y = pg * 8 + bit;
+            if (y >= h) break;
+            p[y * w + x] = (b >> (msb ? 7 - bit : bit)) & 1;
+          }
+        }
+      }
+    }
+    return p;
+  },
+
+  encode(pixels, w, h) {
+    const out = [];
+    const msb = document.getElementById('bitOrder').value === 'msb';
+    const mode = document.getElementById('addressing').value;
+
+    if (mode === 'horizontal') {
+      for (let y = 0; y < h; y++) {
+        for (let xb = 0; xb < Math.ceil(w / 8); xb++) {
+          let b = 0;
+          for (let bit = 0; bit < 8; bit++) {
+            const x = xb * 8 + bit;
+            if (x >= w) break;
+            b |= (pixels[y * w + x] << (msb ? 7 - bit : bit));
+          }
+          out.push(b);
+        }
+      }
+    } else {
+      const pages = Math.ceil(h / 8);
+      for (let pg = 0; pg < pages; pg++) {
+        for (let x = 0; x < w; x++) {
+          let b = 0;
+          for (let bit = 0; bit < 8; bit++) {
+            const y = pg * 8 + bit;
+            if (y >= h) break;
+            b |= (pixels[y * w + x] << (msb ? 7 - bit : bit));
+          }
+          out.push(b);
+        }
+      }
+    }
+    return out;
+  },
+
+  render() {
+    this.imgW = +document.getElementById('width').value;
+    this.imgH = +document.getElementById('height').value;
+    
+    if (this.imgW % 8 !== 0 || this.imgH % 8 !== 0) {
+      return this.setStatus('Разрешение должно быть кратно 8', 'warn');
+    }
+    
+    const bytes = this.parseInput();
+    if (bytes.length === 0) {
+      return this.setStatus('Нет данных для рендера', 'warn');
+    }
+    
+    this.pixels = this.decode(bytes, this.imgW, this.imgH);
+    this.setStatus(`Загружено ${bytes.length} байт → ${this.imgW}×${this.imgH}`, 'ok');
+    this.renderCanvas();
+  },
+
+  renderCanvas() {
+    if (!this.pixels) {
+      const cssW = this.imgW * this.scale;
+      const cssH = this.imgH * this.scale;
+      this.canvas.width = cssW;
+      this.canvas.height = cssH;
+      this.canvas.style.width = cssW + 'px';
+      this.canvas.style.height = cssH + 'px';
+      this.ctx.fillStyle = '#111';
+      this.ctx.fillRect(0, 0, cssW, cssH);
+      return;
+    }
+    
+    const cssW = this.imgW * this.scale;
+    const cssH = this.imgH * this.scale;
+    
+    this.canvas.width = cssW;
+    this.canvas.height = cssH;
+    this.canvas.style.width = cssW + 'px';
+    this.canvas.style.height = cssH + 'px';
+    
+    const ctx = this.ctx;
+    const invert = document.getElementById('invert').checked;
+
+    ctx.fillStyle = invert ? '#fff' : '#000';
+    ctx.fillRect(0, 0, cssW, cssH);
+
+    ctx.fillStyle = invert ? '#000' : '#fff';
+    for (let i = 0; i < this.pixels.length; i++) {
+      if (this.pixels[i]) {
+        const x = (i % this.imgW) * this.scale;
+        const y = Math.floor(i / this.imgW) * this.scale;
+        ctx.fillRect(x, y, this.scale, this.scale);
+      }
+    }
+
+    if (this.scale >= 3) {
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x <= this.imgW; x++) {
+        ctx.beginPath(); 
+        ctx.moveTo(x * this.scale + 0.5, 0); 
+        ctx.lineTo(x * this.scale + 0.5, cssH); 
+        ctx.stroke();
+      }
+      for (let y = 0; y <= this.imgH; y++) {
+        ctx.beginPath(); 
+        ctx.moveTo(0, y * this.scale + 0.5); 
+        ctx.lineTo(cssW, y * this.scale + 0.5); 
+        ctx.stroke();
+      }
+    }
+  },
+
+  getPixel(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      x: Math.floor((e.clientX - rect.left) / this.scale),
+      y: Math.floor((e.clientY - rect.top) / this.scale)
+    };
+  },
+
+  startDraw(e) {
+    e.preventDefault();
+    this.drawing = true;
+    this.lastPos = this.getPixel(e);
+    this.paintPixel(this.lastPos.x, this.lastPos.y);
+  },
+
+  draw(e) {
+    if (!this.drawing || !this.lastPos) return;
+    const pos = this.getPixel(e);
+    this.bresenhamLine(this.lastPos.x, this.lastPos.y, pos.x, pos.y);
+    this.lastPos = pos;
+  },
+
+  bresenhamLine(x0, y0, x1, y1) {
+    const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
+    while (true) {
+      this.paintPixel(x0, y0);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 > -dy) { err -= dy; x0 += sx; }
+      if (e2 < dx) { err += dx; y0 += sy; }
+    }
+  },
+
+  paintPixel(x, y) {
+    if (!this.pixels) return;
+    if (x < 0 || x >= this.imgW || y < 0 || y >= this.imgH) return;
+    const idx = y * this.imgW + x;
+    if (this.tool === 'paint') this.pixels[idx] = 1;
+    else this.pixels[idx] = 0;
+    this.renderCanvas();
+  },
+
+  setTool(mode) {
+    this.tool = mode;
+    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(mode === 'paint' ? 'toolPaint' : 'toolErase').classList.add('active');
+  },
+
+  clearCanvas() {
+    if (this.pixels) {
+      this.pixels.fill(0);
+      this.renderCanvas();
+    }
+  },
+
+  exportArray() {
+    if (!this.pixels) return;
+    const bytes = this.encode(this.pixels, this.imgW, this.imgH);
+    const lines = [];
+    for (let i = 0; i < bytes.length; i += 16) {
+      lines.push('  ' + bytes.slice(i, i + 16).map(b => '0x' + b.toString(16).toUpperCase().padStart(2, '0')).join(', '));
+    }
+    const varName = 'DISPLAY_IMG';
+    const cStr = `const uint8_t ${varName}[] = {\n${lines.join(',\n')}\n};`;
+    document.getElementById('output').value = cStr;
+  },
+
+  copyOutput() {
+    const out = document.getElementById('output');
+    out.select();
+    navigator.clipboard.writeText(out.value);
+    this.setStatus('Скопировано в буфер', 'ok');
+  },
+
+  setStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+  }
+};
+
+App.init();
+</script>
+</body>
+</html>
