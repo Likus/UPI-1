@@ -5349,16 +5349,6 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Добавить подтягивающие резисторы 4,7к на линии iic\nДобавить диоды на линии iic\nЗаменить резистор R9 на примерно 3к\nПоставить R16 побольше для снижения яркости светодиодов\nВозможно заменить пищалку на аналогичную прототипу"
-		(exclude_from_sim no)
-		(at 130.556 137.414 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "ac2f4cb9-d6c7-46ca-9ca9-63ce67bc387b")
-	)
 	(junction
 		(at 227.33 118.11)
 		(diameter 0)
@@ -8731,7 +8721,7 @@
 			(uuid "b18436c4-e667-4c50-af96-f92e005e4a8f")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR020")
 					(unit 1)
@@ -8811,7 +8801,7 @@
 			(uuid "e848e7c4-fed1-41d5-945f-30acc87e7c6a")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW6")
 					(unit 1)
@@ -8893,7 +8883,7 @@
 			(uuid "28f24391-405c-485d-8e7b-ab01a5b91f13")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R16")
 					(unit 1)
@@ -8975,7 +8965,7 @@
 			(uuid "a67e03bf-dacf-45e1-ae6f-81bb7df164e3")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R4")
 					(unit 1)
@@ -9053,7 +9043,7 @@
 			(uuid "829c1598-5918-4b1d-b3d8-1ab3e1f8eea0")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR022")
 					(unit 1)
@@ -9131,7 +9121,7 @@
 			(uuid "61b17dd9-0828-4897-9c29-cb14c05aae2c")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR031")
 					(unit 1)
@@ -9211,7 +9201,7 @@
 			(uuid "effe85c7-9305-4ae1-b6f5-bd2360fff4ff")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R11")
 					(unit 1)
@@ -9291,7 +9281,7 @@
 			(uuid "1fc8df30-4b52-49de-924e-694548a07a68")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R14")
 					(unit 1)
@@ -9371,7 +9361,7 @@
 			(uuid "7cd063e6-5769-459b-b6e7-afeadb21af9c")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "D3")
 					(unit 1)
@@ -9449,7 +9439,7 @@
 			(uuid "3c62cd2f-98d0-4498-b05f-568c67cbf704")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR05")
 					(unit 1)
@@ -9531,7 +9521,7 @@
 			(uuid "ecb91994-1ac1-4a5c-a842-277526a78d56")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C9")
 					(unit 1)
@@ -9613,7 +9603,7 @@
 			(uuid "5009c5ba-cdf6-4311-8f20-51ea7106c5e8")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C3")
 					(unit 1)
@@ -9691,7 +9681,7 @@
 			(uuid "28debe13-1acd-4e88-9951-b19e34180258")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR032")
 					(unit 1)
@@ -9773,7 +9763,7 @@
 			(uuid "87cccf83-fee8-4053-8f92-dd729a820dd7")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "BZ1")
 					(unit 1)
@@ -9876,7 +9866,7 @@
 			(uuid "ab9eeeaa-e403-4708-a560-74d451aa27b2")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "U1")
 					(unit 1)
@@ -9958,7 +9948,7 @@
 			(uuid "469ff874-b6a0-44fa-8001-9dab65eb2d4b")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C8")
 					(unit 1)
@@ -10050,7 +10040,7 @@
 			(uuid "76f3a902-f529-4fc2-b5f5-3d1c2de69f00")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "U3")
 					(unit 1)
@@ -10128,7 +10118,7 @@
 			(uuid "850fc2b9-e319-438a-9207-690c7c02cbd7")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR024")
 					(unit 1)
@@ -10206,7 +10196,7 @@
 			(uuid "bf226d1b-d479-4cee-888b-36a4cb89da68")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR021")
 					(unit 1)
@@ -10286,7 +10276,7 @@
 			(uuid "94b4d27d-9616-4246-80a9-713ea098cb8e")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW2")
 					(unit 1)
@@ -10369,7 +10359,7 @@
 			(uuid "37fe09fa-4085-409c-b37c-df966e6664f4")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "J1")
 					(unit 1)
@@ -10520,7 +10510,7 @@
 			(uuid "96b1d91f-8288-4ea2-baed-f62c6974d857")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "J2")
 					(unit 1)
@@ -10598,7 +10588,7 @@
 			(uuid "ffefdf48-0f11-4e27-a7fa-a7b8409416c4")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR012")
 					(unit 1)
@@ -10676,7 +10666,7 @@
 			(uuid "98d4d5f2-f64d-44e5-9a2c-236e39a9dccd")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR030")
 					(unit 1)
@@ -10771,7 +10761,7 @@
 			(uuid "1562dd0f-cc72-425c-92ab-c90fd0f9ab61")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "J3")
 					(unit 1)
@@ -10886,7 +10876,7 @@
 			(uuid "037274b9-a4cf-46a1-aca9-f8f82e97f13e")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "BT1")
 					(unit 1)
@@ -10964,7 +10954,7 @@
 			(uuid "d7528ffb-3e38-4c14-9508-e6814aeb618d")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR06")
 					(unit 1)
@@ -11047,7 +11037,7 @@
 			(uuid "282736cb-a92d-4336-a8f0-3c5bfcfbb9d5")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "U4")
 					(unit 1)
@@ -11129,7 +11119,7 @@
 			(uuid "dbbabbe8-0bed-43e5-963b-403977e5e5da")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C2")
 					(unit 1)
@@ -11209,7 +11199,7 @@
 			(uuid "5993b6de-b381-442a-8418-88aed8a8626e")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW3")
 					(unit 1)
@@ -11291,7 +11281,7 @@
 			(uuid "831d4ce1-6617-4171-94a7-0ee7e91a1178")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C4")
 					(unit 1)
@@ -11373,7 +11363,7 @@
 			(uuid "56b8d1c3-7019-4a32-8a2d-0784ec8b1f5c")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R9")
 					(unit 1)
@@ -11451,7 +11441,7 @@
 			(uuid "c0f291a8-1f15-4f9e-ad3d-0cd883a6be3c")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR015")
 					(unit 1)
@@ -11542,7 +11532,7 @@
 			(uuid "2664c2d4-cab8-4f7e-a4e9-c0fad79bf251")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "D2")
 					(unit 1)
@@ -11622,7 +11612,7 @@
 			(uuid "48d34fc1-1bac-4df0-9209-a24998f9f084")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "D4")
 					(unit 1)
@@ -11700,7 +11690,7 @@
 			(uuid "bff25401-698b-4bee-a552-fd1a362a01e0")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR011")
 					(unit 1)
@@ -11778,7 +11768,7 @@
 			(uuid "1381e7c2-a52b-413f-9c53-29a1ce5ac4da")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR016")
 					(unit 1)
@@ -11856,7 +11846,7 @@
 			(uuid "c1f6db0f-7e42-4588-a327-926e2586c5cc")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR01")
 					(unit 1)
@@ -11934,7 +11924,7 @@
 			(uuid "dbfdecf5-2ddd-4112-a735-a5bf1162cf81")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR013")
 					(unit 1)
@@ -12012,7 +12002,7 @@
 			(uuid "b697c704-668c-4373-a410-b039164ff7d9")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR010")
 					(unit 1)
@@ -12090,7 +12080,7 @@
 			(uuid "2847171e-7ed5-4ccd-83c0-2d9fcb2984f7")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR023")
 					(unit 1)
@@ -12172,7 +12162,7 @@
 			(uuid "a304e629-5d76-4e27-bf97-b0298bdb57be")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R3")
 					(unit 1)
@@ -12250,7 +12240,7 @@
 			(uuid "13ea834a-2488-4275-a654-471952a6044f")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR017")
 					(unit 1)
@@ -12328,7 +12318,7 @@
 			(uuid "ac33b326-b4c0-4f84-98f7-05ee247aa5b3")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR03")
 					(unit 1)
@@ -12410,7 +12400,7 @@
 			(uuid "4e19775a-892b-44c5-8584-d050fe26f86d")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R8")
 					(unit 1)
@@ -12504,7 +12494,7 @@
 			(uuid "865af842-7e23-4a33-8aa2-b93b6c739614")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "U5")
 					(unit 1)
@@ -12586,7 +12576,7 @@
 			(uuid "3dc54ad1-74e8-424e-9598-f31156621630")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R12")
 					(unit 1)
@@ -12666,7 +12656,7 @@
 			(uuid "8ff646df-0edc-4719-8c19-ff9f3e6f23ee")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "D5")
 					(unit 1)
@@ -12746,7 +12736,7 @@
 			(uuid "fd655dbf-0c7c-4bc6-ad53-99e404e133d2")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C6")
 					(unit 1)
@@ -12824,7 +12814,7 @@
 			(uuid "05020a09-3eae-4a75-b0eb-a41f880a9409")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR08")
 					(unit 1)
@@ -12915,7 +12905,7 @@
 			(uuid "aa9b7792-e7cb-4b03-8f44-73b56a5acec6")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "D1")
 					(unit 1)
@@ -12997,7 +12987,7 @@
 			(uuid "f0c652ad-f1f7-486c-9217-ac7af71fe1c2")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C1")
 					(unit 1)
@@ -13077,7 +13067,7 @@
 			(uuid "e93be664-c2e5-4ffe-91ee-fce7d151c357")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW1")
 					(unit 1)
@@ -13155,7 +13145,7 @@
 			(uuid "15d82f43-1e8f-4fb3-a50a-839b2c7244b6")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR02")
 					(unit 1)
@@ -13237,7 +13227,7 @@
 			(uuid "f31d3ea4-d060-4c86-8b80-b7e51cc8d9d6")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R5")
 					(unit 1)
@@ -13319,7 +13309,7 @@
 			(uuid "38c5c422-8615-4c16-b122-53fbba3ec997")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R6")
 					(unit 1)
@@ -13404,7 +13394,7 @@
 			(uuid "fd5c7f93-49d3-45a3-a760-8841c4ccbf31")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW8")
 					(unit 1)
@@ -13482,7 +13472,7 @@
 			(uuid "c4e96a98-f516-41c3-b0a3-25a68dbc6de5")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR07")
 					(unit 1)
@@ -13560,7 +13550,7 @@
 			(uuid "a3422fa5-bdae-4d07-97b2-62a8677486a3")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR018")
 					(unit 1)
@@ -13638,7 +13628,7 @@
 			(uuid "7e90dd30-fdcb-403c-82e4-82f7f29f6709")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR025")
 					(unit 1)
@@ -13716,7 +13706,7 @@
 			(uuid "b7dad6b7-2e05-4460-bbc7-3bfed5e75f90")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR09")
 					(unit 1)
@@ -13794,7 +13784,7 @@
 			(uuid "8b0cf31f-43c9-43d8-852d-72c8477f9bcc")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR027")
 					(unit 1)
@@ -13872,7 +13862,7 @@
 			(uuid "9c05c377-1e75-460b-92bb-ea67801125be")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR029")
 					(unit 1)
@@ -13954,7 +13944,7 @@
 			(uuid "082f92cb-8656-4d96-a619-37e65913825d")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R13")
 					(unit 1)
@@ -14036,7 +14026,7 @@
 			(uuid "1df432c3-ec0d-4c8c-8594-439063596744")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R10")
 					(unit 1)
@@ -14131,7 +14121,7 @@
 			(uuid "bf1c9868-3be3-4bf1-b98a-3883c12c6143")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "Q1")
 					(unit 1)
@@ -14255,7 +14245,7 @@
 			(uuid "ecf54e86-4a94-4cd9-b4f7-97f522c34d0f")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "U2")
 					(unit 1)
@@ -14333,7 +14323,7 @@
 			(uuid "6d8c355d-08b8-427b-a97f-9cbbad687d5d")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR028")
 					(unit 1)
@@ -14415,7 +14405,7 @@
 			(uuid "773ccdc3-83d8-47fc-8447-d3eb2913af65")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R7")
 					(unit 1)
@@ -14493,7 +14483,7 @@
 			(uuid "fd89b52a-e5ab-46f3-bd97-e4e38b1c9f8b")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR026")
 					(unit 1)
@@ -14575,7 +14565,7 @@
 			(uuid "4ca0e237-8dc0-47f7-99cd-cb5c13b27a18")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R15")
 					(unit 1)
@@ -14657,7 +14647,7 @@
 			(uuid "58d9416a-89ff-4538-b10f-19ee398b6141")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R2")
 					(unit 1)
@@ -14735,7 +14725,7 @@
 			(uuid "cf7408fe-ee0d-47cb-a32b-51f44fcb4c5b")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR014")
 					(unit 1)
@@ -14817,7 +14807,7 @@
 			(uuid "2dcf7466-d8a3-4dd7-a3e3-d1cb7c70e194")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C7")
 					(unit 1)
@@ -14899,7 +14889,7 @@
 			(uuid "d709384f-cc86-4462-ad41-cfead732ce4b")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "C5")
 					(unit 1)
@@ -14984,7 +14974,7 @@
 			(uuid "9e2ffb20-2b05-4531-9963-b5282e1268d9")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW7")
 					(unit 1)
@@ -15064,7 +15054,7 @@
 			(uuid "85eaa528-d11b-4a8d-9428-2b247823a255")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW5")
 					(unit 1)
@@ -15146,7 +15136,7 @@
 			(uuid "0cedddb0-a716-4ec6-bf8f-5fa04c0500e8")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R18")
 					(unit 1)
@@ -15224,7 +15214,7 @@
 			(uuid "44e5f237-7ebc-4b58-861e-66c84e380f7a")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR04")
 					(unit 1)
@@ -15302,7 +15292,7 @@
 			(uuid "137bd9f1-a3b5-4925-9ad8-d6602c835002")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "#PWR019")
 					(unit 1)
@@ -15382,7 +15372,7 @@
 			(uuid "62ed7274-175c-4b2c-9f22-b167601ed351")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "L1")
 					(unit 1)
@@ -15462,7 +15452,7 @@
 			(uuid "4f132ef7-320c-4f73-a439-feb4dfdb115e")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "SW4")
 					(unit 1)
@@ -15544,7 +15534,7 @@
 			(uuid "d57fbbf2-efff-438d-b18f-592be723c502")
 		)
 		(instances
-			(project "Л6С1.9 - Плата печатная основная"
+			(project "upi1-main-pcb"
 				(path "/9e945708-6096-4801-8101-a4ada3ff631a"
 					(reference "R17")
 					(unit 1)

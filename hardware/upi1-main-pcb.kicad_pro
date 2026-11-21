@@ -513,7 +513,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "Л6С1.9 - Плата печатная основная.kicad_pro",
+    "filename": "upi1-main-pcb.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -706,8 +706,8 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "Л6С1.9 - Плата печатная основная.kicad_sch",
-        "name": "Корневой лист",
+        "filename": "upi1-main-pcb.kicad_sch",
+        "name": "upi1-main-pcb",
         "uuid": "9e945708-6096-4801-8101-a4ada3ff631a"
       }
     ],
@@ -717,7 +717,7 @@
   "sheets": [
     [
       "9e945708-6096-4801-8101-a4ada3ff631a",
-      "Корневой лист"
+      "upi1-main-pcb"
     ]
   ],
   "text_variables": {},
